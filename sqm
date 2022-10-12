@@ -21,8 +21,8 @@
 #   -q               quiet, no output
 #
 # Environment Variables
-#   PGCLIENT         full path of postgres
-#   PGARGS           postgres arguments
+#   PGCLIENT         full path of Postgres
+#   PGARGS           Postgres arguments
 #
 
 set -uo pipefail
@@ -327,7 +327,7 @@ exit 0
 #     will attempt to locate Postgres; however, if that's not possible, it will
 #     return an error.
 #
-#     * PGARGS - command line arguments to pass to the postgres client. This
+#     * PGARGS - command line arguments to pass to the Postgres client. This
 #     will vary from one environment to the next.
 #
 #     Upon start-up, this tool will attempt to validate the Postgres
