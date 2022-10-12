@@ -113,11 +113,11 @@ test_sql() {
   local col
   local val
 
-  res=$($PGCLIENT $PGARGS < "$fn")
+  res=$($PGCLIENT $PGARGS -xA < "$fn")
   [[ -z $res ]] && error "No result: $fn"
 
-  col=$(echo "$res" | head -n1)
-  val=$(echo "$res" | tail -1)
+  col=$(echo "$res" | cut -d '|' -f 1)
+  val=$(echo "$res" | cut -d '|' -f 2)
 
   if [[ $col != "$TEST_COLUMN" ]]; then
     error "No '$TEST_COLUMN' column: $fn"
