@@ -1,4 +1,4 @@
-SELECT COUNT(*) as test
+SELECT COUNT(*) > 0 as test
 FROM information_schema.columns
 WHERE table_schema='sqm_examples'
 AND table_name='users'

@@ -123,8 +123,8 @@ test_sql() {
     error "No '$TEST_COLUMN' column: $fn"
   fi
 
-  if [[ -z $val ]] || [[ $val -ne 0 ]] && [[ $val -ne 1 ]]; then
-    error "Test did not return 1/0 value: $fn"
+  if [[ -z $val ]] || [[ "$val" != "f" ]] && [[ "$val" != "t" ]]; then
+    error "Test did not return t/f value: $fn"
   fi
 
   echo "$val"
@@ -147,7 +147,7 @@ apply() {
     # Test if the schema needs migration
     val=$(test_sql "$fn") || { echo "$val"; exit 255; }
 
-    if [[ $val -eq 0 ]]; then
+    if [[ "$val" = "f" ]]; then
       if [[ -n ${DRY:-} ]]; then
         verb "$OK_MSG (dry run) $dir"
       else
@@ -156,7 +156,7 @@ apply() {
         else
           # Verify
           val=$(test_sql "$fn") || { echo "$val"; exit 255; }
-          if [[ $val -eq 1 ]]; then
+          if [[ "$val" = "t" ]]; then
             verb "$OK_MSG $dir"
           else
             error "Failed verify: $dir"
@@ -278,15 +278,15 @@ exit 0
 #
 #     * $TEST_NAME must be present inside each migration directory. It is a
 #     plain SQL file, which *must* return a single column named 'test' with a
-#     value of 0 if a migration is required and a value of 1 if no migration is
-#     necessary. An example SQL for testing if a username 'jack' is present
-#     would be:
+#     boolean value of 't' or 'f'. True value means migration is required, and
+#     false if no migration is necessary. An example SQL for testing if a
+#     username 'jack' is present would be:
 #
-#     SELECT IF(COUNT(*) > 0, 1, 0) AS test 
+#     SELECT COUNT(*) > 0 AS test 
 #     FROM users 
 #     WHERE username = 'jack';
 #
-#     The return value of 1 or 0 can be thought of as answering the the
+#     The return value of 't' or 'f' can be thought of as answering the the
 #     question 'Has the migration defined in $APPLY_NAME been successfully
 #     applied, yes or no?'
 #

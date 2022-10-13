@@ -1,9 +1,4 @@
-SELECT 
-  CASE 
-    WHEN COUNT(*) > 0 THEN 1 
-    ELSE 0 
-  END AS test 
-FROM (
+SELECT COUNT(*) > 0 AS test FROM (
   SELECT
     pn.nspname AS enum_schema,
     pt.typname AS enum_name,
