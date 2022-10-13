@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 #
 # Usage: 
-#   $0 run <path> [-n] [-q]
+#   $0 apply <path> [-n] [-q]
 #   $0 stat <path> [-i]
 #   $0 list <path>
 #   $0 sanity
 #   $0 help | docs
 #
 # Commands:
-#   run              run migrations
+#   apply            apply migrations
 #   stat             view applied migrations (-i for unapplied)
 #   list             list the migrations for a path
 #   sanity           run sanity check
@@ -17,7 +17,7 @@
 #
 # Options:
 #   -i               invert results (show unapplied migrations)
-#   -n               dry run, do not apply migrations
+#   -n               dry run, do not really apply migrations
 #   -q               quiet, no output
 #
 # Environment Variables
@@ -130,7 +130,7 @@ test_sql() {
   echo "$val"
 }
 
-run() {
+apply() {
   local test_files
 
   # Find all test files under the migrations path and sort them
@@ -151,7 +151,7 @@ run() {
       if [[ -n ${DRY:-} ]]; then
         verb "$OK_MSG (dry run) $dir"
       else
-        if ! $PGCLIENT $PGARGS -q < "$dir"/$APPLY_NAME; then
+        if ! $PGCLIENT $PGARGS < "$dir"/$APPLY_NAME; then
           error "Failed: $dir/$APPLY_NAME"
         else
           # Verify
@@ -159,7 +159,7 @@ run() {
           if [[ $val -eq 1 ]]; then
             verb "$OK_MSG $dir"
           else
-            error "failed test: $dir"
+            error "Failed verify: $dir"
           fi
         fi
       fi
@@ -206,13 +206,13 @@ if [[ $# -eq 0 ]]; then
   usage
 else
   case $1 in
-    run)
+    apply)
       MIGRATIONS=${2:-}
       shift; shift
       process_opts "$@"
       check_path
       sanity_check 1
-      run
+      apply
       ;;
 
     stat)
@@ -311,11 +311,12 @@ exit 0
 #
 # CREATING MIGRATIONS
 #     Migrations are simple directories and can be created manually. All
-#     migrations will run in alphabetical order, so name them accordingly. 
+#     migrations will be applied in alphabetical order, so name them
+#     accordingly. 
 #
 # RUNNING MIGRATIONS
-#     Migrations are run with the 'run' command and a mandatory parameter with
-#     the migration path. You may run the topmost migration level or any
+#     Migrations are applied with the 'apply' command and a mandatory parameter
+#     with the migration path. You may run the topmost migration level or any
 #     sub-levels as necessary.
 #
 # ENV VARIABLES
