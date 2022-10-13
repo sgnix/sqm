@@ -140,9 +140,7 @@ run() {
   for fn in $test_files
   do
     local dir
-
     dir=$(dirname "$fn")
-    verb "Applying: $dir"
 
     local val
 
@@ -151,17 +149,17 @@ run() {
 
     if [[ $val -eq 0 ]]; then
       if [[ -n ${DRY:-} ]]; then
-        verb "$OK_MSG (dry run) $db"
+        verb "$OK_MSG (dry run) $dir"
       else
-        if ! $PGCLIENT $PGARGS < "$dir"/$APPLY_NAME; then
-          error "Failed $db: $dir/$APPLY_NAME"
+        if ! $PGCLIENT $PGARGS -q < "$dir"/$APPLY_NAME; then
+          error "Failed: $dir/$APPLY_NAME"
         else
           # Verify
           val=$(test_sql "$fn") || { echo "$val"; exit 255; }
           if [[ $val -eq 1 ]]; then
-            verb "$OK_MSG $db"
+            verb "$OK_MSG $dir"
           else
-            error "$db failed test: $fn"
+            error "failed test: $dir"
           fi
         fi
       fi
