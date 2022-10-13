@@ -4,14 +4,14 @@
 #   $0 apply <path> [-n] [-q]
 #   $0 stat <path> [-i]
 #   $0 list <path>
-#   $0 sanity
+#   $0 check
 #   $0 help | docs
 #
 # Commands:
 #   apply            apply migrations
 #   stat             view applied migrations (-i for unapplied)
 #   list             list the migrations for a path
-#   sanity           run sanity check
+#   check            check the Postgress connection
 #   help             this help message
 #   docs             print manual and documentation
 #
@@ -91,6 +91,7 @@ check_path() {
 
 sanity_check() {
   local quiet=${1:-}
+  local conninfo
 
   if [[ -n $PGCLIENT ]] && [[ -x $PGCLIENT ]]; then
     [[ -z $quiet ]] && verb "$OK_MSG $PGNAME client found"
@@ -98,9 +99,10 @@ sanity_check() {
     error "$PGNAME client not found"
   fi
 
-  if [[ -n $(echo "select * from information_schema.tables limit 1" | $PGCLIENT $PGARGS ) ]];
+  conninfo=$(echo "\\conninfo" | $PGCLIENT $PGARGS )
+  if [[ -n $conninfo ]];
   then
-    [[ -z ${quiet:-} ]] && verb "$OK_MSG connection successful"
+    [[ -z ${quiet:-} ]] && verb "$OK_MSG connection successful\n$conninfo"
   else
     error "Can't connect to database"
   fi
@@ -182,9 +184,9 @@ stat() {
     local val
     val=$(test_sql "$fn") || { echo "$val"; exit 255; }
     if [[ -z ${STAT_INVERT:-} ]]; then
-      [[ $val -eq 1 ]] && echo "$dir" 
+      [[ "$val" = "t" ]] && echo "$dir" 
     else
-      [[ $val -eq 0 ]] && echo "$dir"
+      [[ "$val" = "f" ]] && echo "$dir"
     fi
   done
 }
@@ -230,7 +232,7 @@ else
       find "$MIGRATIONS" -name $TEST_NAME | sort | sed 's/test.sql$//'
       ;;
 
-    sanity)
+    check)
       sanity_check
       exit 0
       ;;
