@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
 # Usage: 
-#   $0 apply <path> [-n] [-q]
-#   $0 stat <path> [-i]
-#   $0 list <path>
-#   $0 check
-#   $0 help | docs
+#   $(basename $0) apply <path> [-n] [-q]
+#   $(basename $0) stat <path> [-i]
+#   $(basename $0) list <path>
+#   $(basename $0) check
+#   $(basename $0) help | docs
 #
 # Commands:
 #   apply            apply migrations
@@ -254,13 +254,13 @@ fi
 exit 0
 
 # DOCS BEGIN
-# $0
+# $(basename $0)
 # 
 # NAME
-#     $0 -- SQL Migration Tool
+#     $(basename $0) -- SQL Migration Tool
 #
 # SYNOPSIS
-#     $0 <command> <path> [options]
+#     $(basename $0) <command> <path> [options]
 #
 # DESCRIPTION
 #     The $0 utility is a version and schema agnostic tool for database
