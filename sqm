@@ -27,6 +27,8 @@
 
 set -uo pipefail
 
+VERSION=1.0
+
 OK_MSG="\033[1;32m[OK]\033[0;0m"
 ERROR_MSG="\033[1;31m[ERROR]\033[0;0m"
 WARN_MSG="\033[1;33m[WARN]\033[0;0m"
