@@ -155,7 +155,7 @@ apply() {
       if [[ -n ${DRY:-} ]]; then
         verb "$OK_MSG (dry run) $dir"
       else
-        if ! $PGCLIENT $PGARGS < "$dir"/$APPLY_NAME; then
+        if ! $PGCLIENT $PGARGS -v ON_ERROR_STOP=1 -f "$dir"/$APPLY_NAME; then
           error "Failed: $dir/$APPLY_NAME"
         else
           # Verify
